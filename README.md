@@ -43,6 +43,7 @@ Necessary:
 
 Optional:
 
+- Gcovr
 - Clang-format
 - Python
 - Pre-commit
@@ -50,11 +51,13 @@ Optional:
 ## How to use
 
 1. Enter _src_ directory copy, rename and edit a file and run the tests.
-2. If you want to run all tests use
+2. If you want to run all tests use `--all`
    - `sh scripts/run_test.sh --all`
-3. If you want to run test only one file use
+3. If you want to run test only some files use the filenames
    - `sh scripts/run_test.sh FILE.c`
-4. See the example below:
+4. If you want to see the test coverage after the test use `--coverage`
+   - `sh scripts/run_test.sh --all --coverage`
+5. See the example below:
    - A normal source code (with includes, variables, and functions).
    - Then there is the unit-test section, with set-up, tear-down, and test
      functions which is used to test the functions in the file.
