@@ -27,7 +27,7 @@ git submodule update
 2. Execute the tests
 
 ```sh
-sh scripts/run_all_tests.sh
+sh scripts/run_test.sh --all
 ```
 
 This script must be executed from the project root.
@@ -51,7 +51,7 @@ Optional:
 
 1. Enter _src_ directory copy, rename and edit a file and run the tests.
 2. If you want to run all tests use
-   - `sh scripts/run_all_tests.sh`
+   - `sh scripts/run_test.sh --all`
 3. If you want to run test only one file use
    - `sh scripts/run_test.sh FILE.c`
 4. See the example below:
