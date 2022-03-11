@@ -1,0 +1,6 @@
+[submodule "Unity"]
+	path = lib/unity
+	url = https://github.com/ThrowTheSwitch/Unity
+[submodule "lib/scripts"]
+	path = lib/scripts
+	url = https://github.com/djboni/tdd-scripts
