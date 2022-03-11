@@ -6,48 +6,37 @@ int32_t Sub(int32_t x, int32_t y)
 }
 
 #ifdef UNITTEST
-    #include "unity.h"
+    #include "CppUTest/TestHarness.h"
 
-void suiteSetUp(void)
+TEST_GROUP (Sub)
 {
+    void setup() {}
+    void teardown() {}
+};
+
+TEST(Sub, ZeroZero_ReturnZero)
+{
+    LONGS_EQUAL(0, Sub(0, 0));
 }
 
-int suiteTearDown(int num_failures)
+TEST(Sub, OneZero_ReturnOne)
 {
-    return num_failures;
+    LONGS_EQUAL(1, Sub(1, 0));
 }
 
-void setUp(void)
+TEST(Sub, ZeroOne_ReturnMinusOne)
 {
+    LONGS_EQUAL(-1, Sub(0, 1));
 }
 
-void tearDown(void)
+TEST(Sub, OneOne_ReturnZero)
 {
+    LONGS_EQUAL(0, Sub(1, 1));
 }
 
-void test_Sub_ZeroZero_ReturnZero(void)
+TEST(Sub, ThreeFive_ReturnMinusTwo)
 {
-    TEST_ASSERT_EQUAL(0, Sub(0, 0));
-}
-
-void test_Sub_OneZero_ReturnOne(void)
-{
-    TEST_ASSERT_EQUAL(1, Sub(1, 0));
-}
-
-void test_Sub_ZeroOne_ReturnMinusOne(void)
-{
-    TEST_ASSERT_EQUAL(-1, Sub(0, 1));
-}
-
-void test_Sub_OneOne_ReturnZero(void)
-{
-    TEST_ASSERT_EQUAL(0, Sub(1, 1));
-}
-
-void test_Sub_ThreeFive_ReturnMinusTwo(void)
-{
-    TEST_ASSERT_EQUAL(-2, Sub(3, 5));
+    LONGS_EQUAL(-2, Sub(3, 5));
 }
 
 #endif /* UNITTEST */

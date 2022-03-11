@@ -1,11 +1,11 @@
-# [TDD Unity](https://github.com/djboni/tdd-unity)
+# [TDD CppUTest](https://github.com/djboni/tdd-cpputest)
 
 Copyright (c) 2022 Djones A. Boni
 
-This project helps you to start a C project with TDD (Test Driven Deveoplment)
-using [Unity](https://github.com/ThrowTheSwitch/Unity).
+This project helps you to start a C/C++ project with TDD (Test Driven
+Deveoplment) using [CppUTest](https://github.com/cpputest/cpputest).
 
-You are free to copy, modify, and distribute **TDD Unity** with attribution
+You are free to copy, modify, and distribute **TDD CppUTest** with attribution
 under the terms of the MIT license. See the LICENSE file for details.
 
 ## Cloning this project
@@ -13,7 +13,7 @@ under the terms of the MIT license. See the LICENSE file for details.
 1. Clone and initializing the submodules
 
 ```sh
-git clone --recurse-submodules https://github.com/djboni/tdd-unity
+git clone --recurse-submodules https://github.com/djboni/tdd-cpputest
 ```
 
 If you cloned without `--recurse-submodules`, you can manually initialize the
@@ -37,9 +37,8 @@ This script must be executed from the project root.
 Necessary:
 
 - Bash Shell
-- Ruby
 - Make
-- GCC
+- G++
 
 Optional:
 
@@ -79,62 +78,50 @@ int32_t Sum(int32_t x, int32_t y)
 /* Unit-test section. It is compiled only when the macro UNITTEST is defined. */
 
 #ifdef UNITTEST
-    /* Include unit-test headers and fake/mocks. */
-    #include "unity.h"
+    #include "CppUTest/TestHarness.h"
 
-/* Suite set-up: runs once before the first test. */
-void suiteSetUp(void)
+TEST_GROUP (Sum)
 {
-}
+    /* Test set-up: runs before each test. */
+    void setup() {}
 
-/* Suite tear-down: runs once after the last test. */
-int suiteTearDown(int num_failures)
-{
-    return num_failures;
-}
-
-/* Test set-up: runs before each test. */
-void setUp(void)
-{
-}
-
-/* Test tear-down: runs after each test. */
-void tearDown(void)
-{
-}
+    /* Test tear-down: runs after each test. */
+    void teardown() {}
+};
 
 /*
  * Test naming convention:
  *
- * - test_Function_Parameters_ExpectedResult (function)
- * - test_Context_Interaction_ExpectedReaction (system)
- * - test_Given_When_Then (analogy to Cucumber scenarios)
+ * - TEST(Function, Parameters_ExpectedResult) (function)
+ * - TEST(Context, Interaction_ExpectedReaction) (system)
+ * - TEST(Given, When_Then) (analogy to Cucumber scenarios)
  */
 
-void test_Sum_ZeroZero_ReturnZero(void)
+TEST(Sum, ZeroZero_ReturnZero)
 {
-    TEST_ASSERT_EQUAL(0, Sum(0, 0));
+    LONGS_EQUAL(0, Sum(0, 0));
 }
 
-void test_Sum_OneZero_ReturnOne(void)
+TEST(Sum, OneZero_ReturnOne)
 {
-    TEST_ASSERT_EQUAL(1, Sum(1, 0));
+    LONGS_EQUAL(1, Sum(1, 0));
 }
 
-void test_Sum_ZeroOne_ReturnOne(void)
+TEST(Sum, ZeroOne_ReturnOne)
 {
-    TEST_ASSERT_EQUAL(1, Sum(0, 1));
+    LONGS_EQUAL(1, Sum(0, 1));
 }
 
-void test_Sum_OneOne_ReturnTwo(void)
+TEST(Sum, OneOne_ReturnTwo)
 {
-    TEST_ASSERT_EQUAL(2, Sum(1, 1));
+    LONGS_EQUAL(2, Sum(1, 1));
 }
 
-void test_Sum_ThreeFive_ReturnEight(void)
+TEST(Sum, ThreeFive_ReturnEight)
 {
-    TEST_ASSERT_EQUAL(8, Sum(3, 5));
+    LONGS_EQUAL(8, Sum(3, 5));
 }
 
 #endif /* UNITTEST */
+
 ```

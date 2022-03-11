@@ -6,48 +6,37 @@ int32_t Sum(int32_t x, int32_t y)
 }
 
 #ifdef UNITTEST
-    #include "unity.h"
+    #include "CppUTest/TestHarness.h"
 
-void suiteSetUp(void)
+TEST_GROUP (Sum)
 {
+    void setup() {}
+    void teardown() {}
+};
+
+TEST(Sum, ZeroZero_ReturnZero)
+{
+    LONGS_EQUAL(0, Sum(0, 0));
 }
 
-int suiteTearDown(int num_failures)
+TEST(Sum, OneZero_ReturnOne)
 {
-    return num_failures;
+    LONGS_EQUAL(1, Sum(1, 0));
 }
 
-void setUp(void)
+TEST(Sum, ZeroOne_ReturnOne)
 {
+    LONGS_EQUAL(1, Sum(0, 1));
 }
 
-void tearDown(void)
+TEST(Sum, OneOne_ReturnTwo)
 {
+    LONGS_EQUAL(2, Sum(1, 1));
 }
 
-void test_Sum_ZeroZero_ReturnZero(void)
+TEST(Sum, ThreeFive_ReturnEight)
 {
-    TEST_ASSERT_EQUAL(0, Sum(0, 0));
-}
-
-void test_Sum_OneZero_ReturnOne(void)
-{
-    TEST_ASSERT_EQUAL(1, Sum(1, 0));
-}
-
-void test_Sum_ZeroOne_ReturnOne(void)
-{
-    TEST_ASSERT_EQUAL(1, Sum(0, 1));
-}
-
-void test_Sum_OneOne_ReturnTwo(void)
-{
-    TEST_ASSERT_EQUAL(2, Sum(1, 1));
-}
-
-void test_Sum_ThreeFive_ReturnEight(void)
-{
-    TEST_ASSERT_EQUAL(8, Sum(3, 5));
+    LONGS_EQUAL(8, Sum(3, 5));
 }
 
 #endif /* UNITTEST */

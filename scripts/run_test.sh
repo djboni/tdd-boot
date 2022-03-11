@@ -5,14 +5,25 @@
 BuildScript="lib/scripts/build.mk"
 RunnerCreator="lib/unity/auto/generate_test_runner.rb"
 
+DoBuildCppUTestIfNecessary() {
+
+    # Build CppUTest if necessary
+    if [ ! -f lib/cpputest/cpputest_build/lib/libCppUTest.a ]; then
+        (
+            cd lib/cpputest/cpputest_build
+            autoreconf .. -i
+            ../configure
+            make
+        )
+    fi
+}
+
 DoRunTest() {
 
     # Arguments
     File="$1"
 
     # Determine file names and directories
-    Runner="build/${File%.[cC]}_runner.c"
-    RunnerDir="${Runner%/*}"
     Exec="build/${File%.[cC]}.elf"
     ExecDir="${Exec%/*}"
 
@@ -25,21 +36,15 @@ DoRunTest() {
         mkdir -p "$ExecDir"
     fi
 
-    if [ ! -d "$RunnerDir" ]; then
-        mkdir -p "$RunnerDir"
-    fi
-
-    # Create test runner
-    if [ ! -f "$Runner" ] || [ "$File" -nt "$Runner" ]; then
-        ruby $RunnerCreator "$File" "$Runner"
-    fi
+    DoBuildCppUTestIfNecessary
 
     # Build test
     make -f $BuildScript \
         EXEC="$Exec" \
-        INPUTS="$File $Runner lib/unity/src/unity.c" \
-        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror --coverage" \
-        CPPFLAGS="-D UNITTEST -I lib/unity/src" \
+        INPUTS="$File scripts/main.c lib/cpputest/cpputest_build/lib/libCppUTest.a" \
+        CC=g++ \
+        CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage" \
+        CPPFLAGS="-D UNITTEST -I lib/cpputest/include" \
         LDFLAGS="--coverage" \
         "$Exec"
 
