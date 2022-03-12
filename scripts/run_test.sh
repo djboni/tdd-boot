@@ -5,6 +5,46 @@
 BuildScript="lib/scripts/build.mk"
 RunnerCreator="lib/unity/auto/generate_test_runner.rb"
 
+# Variables
+TestTotal=0
+TestError=0
+ExitStatus=0
+
+DoUpdateResults() {
+    # == 0 Success
+    # != 0 Error
+    TestResult=$1
+
+    if [ $TestResult -ne 0 ]; then
+        ExitStatus=1
+        TestError=$((TestError + 1))
+    fi
+    TestTotal=$((TestTotal + 1))
+}
+
+DoPrintResults() {
+    echo "=============================================="
+    echo "$TestTotal Tests, $TestError Failures"
+    if [ $TestError -eq 0 ]; then
+        echo "OK"
+    else
+        echo "FAIL"
+    fi
+}
+
+DoBuildCppUTestIfNecessary() {
+
+    # Build CppUTest if necessary
+    if [ ! -f lib/cpputest/cpputest_build/lib/libCppUTest.a ]; then
+        (
+            cd lib/cpputest/cpputest_build
+            autoreconf .. -i
+            ../configure
+            make
+        )
+    fi
+}
+
 DoRunTest() {
 
     # Arguments
@@ -42,6 +82,10 @@ DoRunTest() {
 
     # Run test
     "$Exec"
+    TestResult=$?
+
+    # Update results
+    DoUpdateResults $TestResult
 }
 
 DoCoverageIfRequested() {
@@ -99,6 +143,8 @@ DoProcessCommandLineArguments() {
     done
 
     DoCoverageIfRequested
+    DoPrintResults
+    exit $ExitStatus
 }
 
 DoProcessCommandLineArguments "$@"
