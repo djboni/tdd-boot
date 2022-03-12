@@ -2,3 +2,5 @@
 *_runner.c
 *.o
 *.elf
+*.gcno
+*.gcda
