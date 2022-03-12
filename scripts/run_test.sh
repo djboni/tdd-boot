@@ -13,11 +13,8 @@ DoRunTest() {
     # Determine file names and directories
     Runner="build/${File%.[cC]}_runner.c"
     RunnerDir="${Runner%/*}"
-    Exec="build/${File%.[cC]}.elf"
+    Exec="build/${File%.[cC]*}.elf"
     ExecDir="${Exec%/*}"
-
-    # In case there is need to see the commands that are executed
-    #set -x
 
     # Create directories
 
@@ -55,7 +52,7 @@ DoCoverageIfRequested() {
 }
 
 DoPrintUsage() {
-    echo "Usage: ${0##*/} [--error|--clean|--coverage|--all] [FILEs...]"
+    echo "Usage: ${0##*/} [--exec|--error|--clean|--coverage|--all] [FILEs...]"
 }
 
 DoProcessCommandLineArguments() {
@@ -75,6 +72,10 @@ DoProcessCommandLineArguments() {
         -h|--help)
             DoPrintUsage
             exit 0
+            ;;
+        -x|--exec)
+            # In case there is need to see the commands that are executed
+            set -x
             ;;
         -e|--error)
             # Set error flag to stop on first error
