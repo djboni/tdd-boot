@@ -3,7 +3,6 @@
 
 # Constants
 BuildScript="lib/scripts/build.mk"
-RunnerCreator="lib/unity/auto/generate_test_runner.rb"
 
 DoBuildCppUTestIfNecessary() {
 
@@ -38,11 +37,13 @@ DoRunTest() {
     # Build test
     make -f $BuildScript \
         EXEC="$Exec" \
-        INPUTS="$File scripts/main.c lib/cpputest/cpputest_build/lib/libCppUTest.a" \
+        INPUTS="$File scripts/main.c" \
         CC=g++ \
         CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage" \
+        CXX=g++ \
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage" \
         CPPFLAGS="-D UNITTEST -I lib/cpputest/include" \
-        LDFLAGS="--coverage" \
+        LDFLAGS="--coverage -l CppUTest -L lib/cpputest/cpputest_build/lib" \
         "$Exec"
 
     # Run test
@@ -93,7 +94,7 @@ DoProcessCommandLineArguments() {
             FlagCoverage=1
             ;;
         -a|--all)
-            for File in $(find src -name '*.[cC]'); do
+            for File in $(find src -name '*.[cC]' -or -name '*.[cC][pP][pP]'); do
                 DoRunTest "$File"
             done
             ;;
