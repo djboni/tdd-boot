@@ -3,6 +3,7 @@
 
 # Constants
 BuildScript="lib/scripts/build.mk"
+CPPUTEST_DIR="lib/cpputest"
 
 # Variables
 TestTotal=0
@@ -34,9 +35,9 @@ DoPrintResults() {
 DoBuildCppUTestIfNecessary() {
 
     # Build CppUTest if necessary
-    if [ ! -f lib/cpputest/cpputest_build/lib/libCppUTest.a ]; then
+    if [ ! -f "$CPPUTEST_DIR/cpputest_build/lib/libCppUTest.a" ]; then
         (
-            cd lib/cpputest/cpputest_build
+            cd "$CPPUTEST_DIR/cpputest_build"
             autoreconf .. -i
             ../configure
             make
@@ -69,8 +70,8 @@ DoRunTest() {
         CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage" \
         CXX=g++ \
         CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage" \
-        CPPFLAGS="-D UNITTEST -I lib/cpputest/include" \
-        LDFLAGS="--coverage -l CppUTest -L lib/cpputest/cpputest_build/lib" \
+        CPPFLAGS="-D UNITTEST -I $CPPUTEST_DIR/include" \
+        LDFLAGS="--coverage -l CppUTest -L $CPPUTEST_DIR/cpputest_build/lib" \
         "$Exec"
 
     # Run test
