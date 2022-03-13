@@ -3,7 +3,8 @@
 
 # Constants
 BuildScript="lib/scripts/build.mk"
-RunnerCreator="lib/unity/auto/generate_test_runner.rb"
+UNITY_DIR="lib/unity"
+RunnerCreator="$UNITY_DIR/auto/generate_test_runner.rb"
 
 # Variables
 TestTotal=0
@@ -74,9 +75,9 @@ DoRunTest() {
     # Build test
     make -f $BuildScript \
         EXEC="$Exec" \
-        INPUTS="$File $Runner lib/unity/src/unity.c" \
+        INPUTS="$File $Runner $UNITY_DIR/src/unity.c" \
         CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror --coverage" \
-        CPPFLAGS="-D UNITTEST -I lib/unity/src" \
+        CPPFLAGS="-D UNITTEST -I $UNITY_DIR/src" \
         LDFLAGS="--coverage" \
         "$Exec"
 
