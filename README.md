@@ -8,6 +8,7 @@ Development) using different unit-test frameworks.
 The available examples are:
 
 - Unity (C)
+- cmocka (C)
 - CppUTest (C++)
 
 You are free to copy, modify, and distribute **TDD Boot** with attribution
@@ -35,6 +36,7 @@ git submodule update
 cd CppUTest
 # OR
 cd Unity
+cd cmocka
 # ETC
 ```
 
@@ -54,6 +56,7 @@ Necessary:
 - Make
 - GCC/G++
 - Ruby (for Unity)
+- Cmake (for cmocka)
 
 Optional:
 

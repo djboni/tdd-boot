@@ -7,3 +7,6 @@
 [submodule "lib/cpputest"]
 	path = lib/cpputest
 	url = https://github.com/cpputest/cpputest
+[submodule "lib/cmocka"]
+	path = lib/cmocka
+	url = https://gitlab.com/cmocka/cmocka
