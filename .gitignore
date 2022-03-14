@@ -1,5 +1,4 @@
-/build/
-*_runner.c
+build/
 *.o
 *.elf
 *.gcno

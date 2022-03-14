@@ -91,8 +91,8 @@ DoRunTest() {
 
 DoCoverageIfRequested() {
     if [ ! -z $FlagCoverage ]; then
-        gcovr --exclude="lib/" --exclude="build/" --branch
-        gcovr --exclude="lib/" --exclude="build/" | sed '1,4d'
+        gcovr --filter="src/" --branch
+        gcovr --filter="src/" | sed '1,4d'
     fi
 }
 

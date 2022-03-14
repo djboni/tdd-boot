@@ -76,6 +76,8 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+  # CppUTest class macro
+  - TEST_GROUP
 IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Preserve
