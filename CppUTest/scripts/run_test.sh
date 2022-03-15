@@ -99,6 +99,7 @@ DoRunTest() {
     CXX="g++"
     CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
     CPPFLAGS="-I include"
+    LD="gcc"
     LDFLAGS=""
 
     make -f $BuildScript \
@@ -109,6 +110,7 @@ DoRunTest() {
         CXX="$CXX" \
         CXXFLAGS="$CXXFLAGS" \
         CPPFLAGS="$CPPFLAGS" \
+        LD="$LD" \
         LDFLAGS="$LDFLAGS" \
         "$Object"
     BuildResult=$?
@@ -129,13 +131,14 @@ DoRunTest() {
 
         # Build test
 
-        CC="g++"
-        CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CC="gcc"
+        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
         CFLAGS="$CFLAGS -include scripts/MemoryLeakDetector.h"
         CXX="g++"
         CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
         CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
         CPPFLAGS="-I include -I $CPPUTEST_DIR/include"
+        LD="g++"
         LDFLAGS="--coverage -l CppUTest -l CppUTestExt -L $CPPUTEST_DIR/cpputest_build/lib"
 
         # Create test runner
@@ -152,6 +155,7 @@ DoRunTest() {
             CXX="$CXX" \
             CXXFLAGS="$CXXFLAGS" \
             CPPFLAGS="$CPPFLAGS" \
+            LD="$LD" \
             LDFLAGS="$LDFLAGS" \
             "$Exec"
         BuildResult=$?

@@ -100,6 +100,7 @@ DoRunTest() {
     CXX="g++"
     CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
     CPPFLAGS="-I include"
+    LD="gcc"
     LDFLAGS=""
 
     make -f $BuildScript \
@@ -110,6 +111,7 @@ DoRunTest() {
         CXX="$CXX" \
         CXXFLAGS="$CXXFLAGS" \
         CPPFLAGS="$CPPFLAGS" \
+        LD="$LD" \
         LDFLAGS="$LDFLAGS" \
         "$Object"
     BuildResult=$?
@@ -135,6 +137,7 @@ DoRunTest() {
         CXX="g++"
         CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
         CPPFLAGS="-I include -I $CMOCKA_DIR/include"
+        LD="gcc"
         LDFLAGS="--coverage -L $CMOCKA_DIR/build/src -l cmocka"
 
         # Create test runner
@@ -151,6 +154,7 @@ DoRunTest() {
             CXX="$CXX" \
             CXXFLAGS="$CXXFLAGS" \
             CPPFLAGS="$CPPFLAGS" \
+            LD="$LD" \
             LDFLAGS="$LDFLAGS" \
             "$Exec"
         BuildResult=$?
