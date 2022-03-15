@@ -13,17 +13,27 @@ int32_t Sub(int32_t x, int32_t y)
 
     #include "cmocka.h"
 
+int suiteSetUp(void **state)
+{
+    (void)state;
+    return 0;
+}
+
+int suiteTearDown(void **state)
+{
+    (void)state;
+    return 0;
+}
+
 int setUp(void **state)
 {
     (void)state;
-
     return 0;
 }
 
 int tearDown(void **state)
 {
     (void)state;
-
     return 0;
 }
 
@@ -65,14 +75,19 @@ void test_Sub_ThreeFive_ReturnMinusTwo(void **state)
 int main(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_Sub_ZeroZero_ReturnZero),
-        cmocka_unit_test(test_Sub_OneZero_ReturnOne),
-        cmocka_unit_test(test_Sub_ZeroOne_ReturnMinusOne),
-        cmocka_unit_test(test_Sub_OneOne_ReturnZero),
-        cmocka_unit_test(test_Sub_ThreeFive_ReturnMinusTwo),
+        cmocka_unit_test_setup_teardown(
+            test_Sub_ZeroZero_ReturnZero, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sub_OneZero_ReturnOne, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sub_ZeroOne_ReturnMinusOne, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sub_OneOne_ReturnZero, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sub_ThreeFive_ReturnMinusTwo, setUp, tearDown),
     };
 
-    return cmocka_run_group_tests(tests, setUp, tearDown);
+    return cmocka_run_group_tests(tests, suiteSetUp, suiteTearDown);
 }
 
 #endif /* UNITTEST */

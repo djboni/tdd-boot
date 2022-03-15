@@ -13,6 +13,18 @@ int32_t Sum(int32_t x, int32_t y)
 
     #include "cmocka.h"
 
+int suiteSetUp(void **state)
+{
+    (void)state;
+    return 0;
+}
+
+int suiteTearDown(void **state)
+{
+    (void)state;
+    return 0;
+}
+
 int setUp(void **state)
 {
     (void)state;
@@ -63,14 +75,19 @@ void test_Sum_ThreeFive_ReturnEight(void **state)
 int main(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_Sum_ZeroZero_ReturnZero),
-        cmocka_unit_test(test_Sum_OneZero_ReturnOne),
-        cmocka_unit_test(test_Sum_ZeroOne_ReturnOne),
-        cmocka_unit_test(test_Sum_OneOne_ReturnTwo),
-        cmocka_unit_test(test_Sum_ThreeFive_ReturnEight),
+        cmocka_unit_test_setup_teardown(
+            test_Sum_ZeroZero_ReturnZero, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sum_OneZero_ReturnOne, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sum_ZeroOne_ReturnOne, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sum_OneOne_ReturnTwo, setUp, tearDown),
+        cmocka_unit_test_setup_teardown(
+            test_Sum_ThreeFive_ReturnEight, setUp, tearDown),
     };
 
-    return cmocka_run_group_tests(tests, setUp, tearDown);
+    return cmocka_run_group_tests(tests, suiteSetUp, suiteTearDown);
 }
 
 #endif /* UNITTEST */
