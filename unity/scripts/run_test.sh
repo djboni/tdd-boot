@@ -52,6 +52,7 @@ DoPrintResults() {
     else
         echo "FAIL"
     fi
+    echo
 }
 
 DoBuildUnityIfNecessary() {

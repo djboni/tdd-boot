@@ -51,6 +51,7 @@ DoPrintResults() {
     else
         echo "FAIL"
     fi
+    echo
 }
 
 DoBuildCmockaIfNecessary() {
