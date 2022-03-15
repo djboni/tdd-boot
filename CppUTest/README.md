@@ -1,21 +1,23 @@
 # [TDD Boot - CppUTest](https://github.com/djboni/tdd-boot)
 
 ```c
-/* File: example.c with additional comments. */
+/* File: sum.c. */
 
-/* Normal source code. It is always compiled. */
-
-#include <stdint.h>
+#include "sum.h"
 
 int32_t Sum(int32_t x, int32_t y)
 {
     return x + y;
 }
+```
 
-/* Unit-test section. It is compiled only when the macro UNITTEST is defined. */
+```c
+/* File: sum_test.cpp with additional comments. */
 
-#ifdef UNITTEST
-    #include "CppUTest/TestHarness.h"
+#include "sum.h"
+
+/* Include unit-test headers and fake/mocks. */
+#include "CppUTest/TestHarness.h"
 
 TEST_GROUP (Sum)
 {
@@ -58,7 +60,4 @@ TEST(Sum, ThreeFive_ReturnEight)
 {
     LONGS_EQUAL(8, Sum(3, 5));
 }
-
-#endif /* UNITTEST */
-
 ```

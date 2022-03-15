@@ -7,6 +7,9 @@ BuildScript="lib/scripts/build.mk"
 CPPUTEST_DIR="lib/cpputest"
 
 BuildDir="build"
+SrcDir="src"
+TestsDir="tests"
+TestsEnd="_test.[cC]*"
 TestsObjDir="$BuildDir/obj_tests"
 ObjDir="$BuildDir/obj"
 
@@ -55,6 +58,9 @@ DoRunTest() {
     # Arguments
     File="$1"
 
+    Test="$(echo $File | sed -E "s:($SrcDir)/(.*)(\.[cC].*):$TestsDir/\2$TestsEnd:")"
+    Test="$(ls -1 $Test | head -n 1)"
+
     # Determine file names and directories
 
     Exec="$BuildDir/${File%.[cC]*}.elf"
@@ -79,7 +85,7 @@ DoRunTest() {
     CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
     CXX="g++"
     CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
-    CPPFLAGS=""
+    CPPFLAGS="-I include"
     LDFLAGS=""
 
     make -f $BuildScript \
@@ -100,55 +106,59 @@ DoRunTest() {
         return
     fi
 
-    # Build test
+    # If the test exists
+    if [ -f "$Test" ]; then
 
-    CC="g++"
-    CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CFLAGS="$CFLAGS -include scripts/MemoryLeakDetector.h"
-    CXX="g++"
-    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
-    CPPFLAGS="-D UNITTEST -I $CPPUTEST_DIR/include"
-    LDFLAGS="--coverage -l CppUTest -l CppUTestExt -L $CPPUTEST_DIR/cpputest_build/lib"
+        # Build test
 
-    # Create test runner
-    # Do nothing
+        CC="g++"
+        CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CFLAGS="$CFLAGS -include scripts/MemoryLeakDetector.h"
+        CXX="g++"
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
+        CPPFLAGS="-I include -I $CPPUTEST_DIR/include"
+        LDFLAGS="--coverage -l CppUTest -l CppUTestExt -L $CPPUTEST_DIR/cpputest_build/lib"
 
-    DoBuildCppUTestIfNecessary
+        # Create test runner
+        # Do nothing
 
-    make -f $BuildScript \
-        EXEC="$Exec" \
-        OBJ_DIR="$TestsObjDir" \
-        INPUTS="$File scripts/main.c" \
-        CC="$CC" \
-        CFLAGS="$CFLAGS" \
-        CXX="$CXX" \
-        CXXFLAGS="$CXXFLAGS" \
-        CPPFLAGS="$CPPFLAGS" \
-        LDFLAGS="$LDFLAGS" \
+        DoBuildCppUTestIfNecessary
+
+        make -f $BuildScript \
+            EXEC="$Exec" \
+            OBJ_DIR="$TestsObjDir" \
+            INPUTS="$File $Test scripts/main.c" \
+            CC="$CC" \
+            CFLAGS="$CFLAGS" \
+            CXX="$CXX" \
+            CXXFLAGS="$CXXFLAGS" \
+            CPPFLAGS="$CPPFLAGS" \
+            LDFLAGS="$LDFLAGS" \
+            "$Exec"
+        BuildResult=$?
+
+        # Update results and return if building fails
+        if [ $BuildResult -ne 0 ]; then
+            DoUpdateResults $BuildResult
+            return
+        fi
+
+        # Run test
         "$Exec"
-    BuildResult=$?
+        TestResult=$?
 
-    # Update results and return if building fails
-    if [ $BuildResult -ne 0 ]; then
-        DoUpdateResults $BuildResult
-        return
+        # Update results
+        DoUpdateResults $TestResult
     fi
-
-    # Run test
-    "$Exec"
-    TestResult=$?
-
-    # Update results
-    DoUpdateResults $TestResult
 }
 
 DoCoverageIfRequested() {
     if [ ! -z $FlagCoverage ]; then
-        gcovr --filter="src/" --branch \
+        gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" --branch \
             --exclude-unreachable-branches \
             --exclude-throw-branches
-        gcovr --filter="src/" | sed '1,4d'
+        gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" | sed '1,4d'
     fi
 }
 
@@ -189,7 +199,7 @@ DoProcessCommandLineArguments() {
             FlagCoverage=1
             ;;
         -a|--all)
-            for File in $(find src -name '*.[cC]' -or -name '*.[cC][pP][pP]'); do
+            for File in $(find src/ -name '*.[cC]*'); do
                 DoRunTest "$File"
             done
             ;;

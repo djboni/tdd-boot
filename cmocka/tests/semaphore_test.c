@@ -1,33 +1,11 @@
 #include "semaphore.h"
 
-void SemaphoreInit(semaphore_t *sem)
-{
-    sem->posted = 0;
-}
+#include <setjmp.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h>
 
-int8_t SemaphoreTryWait(semaphore_t *sem)
-{
-    if (!sem->posted)
-        return 0;
-    sem->posted = 0;
-    return 1;
-}
-
-int8_t SemaphorePost(semaphore_t *sem)
-{
-    if (sem->posted)
-        return 0;
-    sem->posted = 1;
-    return 1;
-}
-
-#ifdef UNITTEST
-    #include <setjmp.h>
-    #include <stdarg.h>
-    #include <stddef.h>
-    #include <stdint.h>
-
-    #include "cmocka.h"
+#include "cmocka.h"
 
 semaphore_t sem;
 
@@ -103,5 +81,3 @@ int main(void)
 
     return cmocka_run_group_tests(tests, suiteSetUp, suiteTearDown);
 }
-
-#endif /* UNITTEST */

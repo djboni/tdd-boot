@@ -1,28 +1,6 @@
 #include "semaphore.h"
 
-void SemaphoreInit(semaphore_t *sem)
-{
-    sem->posted = 0;
-}
-
-int8_t SemaphoreTryWait(semaphore_t *sem)
-{
-    if (!sem->posted)
-        return 0;
-    sem->posted = 0;
-    return 1;
-}
-
-int8_t SemaphorePost(semaphore_t *sem)
-{
-    if (sem->posted)
-        return 0;
-    sem->posted = 1;
-    return 1;
-}
-
-#ifdef UNITTEST
-    #include "unity.h"
+#include "unity.h"
 
 semaphore_t sem;
 
@@ -65,5 +43,3 @@ void test_Semaphore_TryWait_SuccessOneWhenPosted(void)
     SemaphorePost(&sem);
     TEST_ASSERT_EQUAL(1, SemaphoreTryWait(&sem));
 }
-
-#endif /* UNITTEST */

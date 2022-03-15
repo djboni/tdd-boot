@@ -7,6 +7,9 @@ BuildScript="lib/scripts/build.mk"
 CMOCKA_DIR="lib/cmocka"
 
 BuildDir="build"
+SrcDir="src"
+TestsDir="tests"
+TestsEnd="_test.[cC]*"
 TestsObjDir="$BuildDir/obj_tests"
 ObjDir="$BuildDir/obj"
 
@@ -56,6 +59,9 @@ DoRunTest() {
     # Arguments
     File="$1"
 
+    Test="$(echo $File | sed -E "s:($SrcDir)/(.*)(\.[cC].*):$TestsDir/\2$TestsEnd:")"
+    Test="$(ls -1 $Test | head -n 1)"
+
     # Determine file names and directories
 
     Exec="$BuildDir/${File%.[cC]*}.elf"
@@ -80,7 +86,7 @@ DoRunTest() {
     CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
     CXX="g++"
     CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
-    CPPFLAGS=""
+    CPPFLAGS="-I include"
     LDFLAGS=""
 
     make -f $BuildScript \
@@ -101,38 +107,41 @@ DoRunTest() {
         return
     fi
 
-    # Build test
+    # If the test exists
+    if [ -f "$Test" ]; then
 
-    CC="gcc"
-    CFLAGS="-g -O0 -std=c99 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CXX="g++"
-    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CPPFLAGS="-D UNITTEST -I $CMOCKA_DIR/include"
-    LDFLAGS="--coverage -L $CMOCKA_DIR/build/src -l cmocka"
+        # Build test
 
-    # Create test runner
-    # Do nothing
+        CC="gcc"
+        CFLAGS="-g -O0 -std=c99 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CXX="g++"
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CPPFLAGS="-I include -I $CMOCKA_DIR/include"
+        LDFLAGS="--coverage -L $CMOCKA_DIR/build/src -l cmocka"
 
-    DoBuildCmockaIfNecessary
+        # Create test runner
+        # Do nothing
 
-    make -f $BuildScript \
-        EXEC="$Exec" \
-        OBJ_DIR="$TestsObjDir" \
-        INPUTS="$File" \
-        CC="$CC" \
-        CFLAGS="$CFLAGS" \
-        CXX="$CXX" \
-        CXXFLAGS="$CXXFLAGS" \
-        CPPFLAGS="$CPPFLAGS" \
-        LDFLAGS="$LDFLAGS" \
-        "$Exec"
-    BuildResult=$?
+        DoBuildCmockaIfNecessary
 
-    # Update results and return if building fails
-    if [ $BuildResult -ne 0 ]; then
-        DoUpdateResults $BuildResult
-        return
-    fi
+        make -f $BuildScript \
+            EXEC="$Exec" \
+            OBJ_DIR="$TestsObjDir" \
+            INPUTS="$File $Test" \
+            CC="$CC" \
+            CFLAGS="$CFLAGS" \
+            CXX="$CXX" \
+            CXXFLAGS="$CXXFLAGS" \
+            CPPFLAGS="$CPPFLAGS" \
+            LDFLAGS="$LDFLAGS" \
+            "$Exec"
+        BuildResult=$?
+
+        # Update results and return if building fails
+        if [ $BuildResult -ne 0 ]; then
+            DoUpdateResults $BuildResult
+            return
+        fi
 
         # Run test
         LD_LIBRARY_PATH=$CMOCKA_DIR/build/src "$Exec"
@@ -140,14 +149,15 @@ DoRunTest() {
 
         # Update results
         DoUpdateResults $TestResult
+    fi
 }
 
 DoCoverageIfRequested() {
     if [ ! -z $FlagCoverage ]; then
-        gcovr --filter="src/" --branch \
+        gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" --branch \
             --exclude-unreachable-branches \
             --exclude-throw-branches
-        gcovr --filter="src/" | sed '1,4d'
+        gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" | sed '1,4d'
     fi
 }
 
@@ -188,7 +198,7 @@ DoProcessCommandLineArguments() {
             FlagCoverage=1
             ;;
         -a|--all)
-            for File in $(find src -name '*.[cC]'); do
+            for File in $(find src/ -name '*.[cC]*'); do
                 DoRunTest "$File"
             done
             ;;

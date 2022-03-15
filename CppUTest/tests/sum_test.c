@@ -1,12 +1,6 @@
-#include <stdint.h>
+#include "sum.h"
 
-int32_t Sum(int32_t x, int32_t y)
-{
-    return x + y;
-}
-
-#ifdef UNITTEST
-    #include "CppUTest/TestHarness.h"
+#include "CppUTest/TestHarness.h"
 
 TEST_GROUP (Sum)
 {
@@ -38,5 +32,3 @@ TEST(Sum, ThreeFive_ReturnEight)
 {
     LONGS_EQUAL(8, Sum(3, 5));
 }
-
-#endif /* UNITTEST */

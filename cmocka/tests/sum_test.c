@@ -1,17 +1,11 @@
+#include "sum.h"
+
+#include <setjmp.h>
+#include <stdarg.h>
+#include <stddef.h>
 #include <stdint.h>
 
-int32_t Sum(int32_t x, int32_t y)
-{
-    return x + y;
-}
-
-#if UNITTEST
-    #include <setjmp.h>
-    #include <stdarg.h>
-    #include <stddef.h>
-    #include <stdint.h>
-
-    #include "cmocka.h"
+#include "cmocka.h"
 
 int suiteSetUp(void **state)
 {
@@ -89,5 +83,3 @@ int main(void)
 
     return cmocka_run_group_tests(tests, suiteSetUp, suiteTearDown);
 }
-
-#endif /* UNITTEST */

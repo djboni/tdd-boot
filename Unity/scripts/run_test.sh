@@ -8,6 +8,9 @@ UNITY_DIR="lib/unity"
 RunnerCreator="$UNITY_DIR/auto/generate_test_runner.rb"
 
 BuildDir="build"
+SrcDir="src"
+TestsDir="tests"
+TestsEnd="_test.[cC]*"
 TestsObjDir="$BuildDir/obj_tests"
 ObjDir="$BuildDir/obj"
 
@@ -48,9 +51,12 @@ DoRunTest() {
     # Arguments
     File="$1"
 
+    Test="$(echo $File | sed -E "s:($SrcDir)/(.*)(\.[cC].*):$TestsDir/\2$TestsEnd:")"
+    Test="$(ls -1 $Test | head -n 1)"
+
     # Determine file names and directories
 
-    Runner="$BuildDir/${File%.[cC]}_runner.c"
+    Runner="$BuildDir/${Test%.[cC]*}_runner.c"
     RunnerDir="${Runner%/*}"
 
     Exec="$BuildDir/${File%.[cC]*}.elf"
@@ -60,6 +66,10 @@ DoRunTest() {
     ObjectDir="${Object%/*}"
 
     # Create directories
+
+    if [ ! -d "$RunnerDir" ]; then
+        mkdir -p "$RunnerDir"
+    fi
 
     if [ ! -d "$ExecDir" ]; then
         mkdir -p "$ExecDir"
@@ -75,7 +85,7 @@ DoRunTest() {
     CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
     CXX="g++"
     CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
-    CPPFLAGS=""
+    CPPFLAGS="-I include"
     LDFLAGS=""
 
     make -f $BuildScript \
@@ -96,55 +106,59 @@ DoRunTest() {
         return
     fi
 
-    # Build test
+    # If the test exists
+    if [ -f "$Test" ]; then
 
-    CC="gcc"
-    CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CXX="g++"
-    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CPPFLAGS="-D UNITTEST -I $UNITY_DIR/src"
-    LDFLAGS="--coverage"
+        # Build test
 
-    # Create test runner
-    if [ ! -f "$Runner" ] || [ "$File" -nt "$Runner" ]; then
-        ruby $RunnerCreator "$File" "$Runner"
-    fi
+        CC="gcc"
+        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CXX="g++"
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CPPFLAGS="-I include -I $UNITY_DIR/src"
+        LDFLAGS="--coverage"
 
-    DoBuildUnityIfNecessary
+        # Create test runner
+        if [ ! -f "$Runner" ] || [ "$Test" -nt "$Runner" ]; then
+            ruby $RunnerCreator "$Test" "$Runner"
+        fi
 
-    make -f $BuildScript \
-        EXEC="$Exec" \
-        OBJ_DIR="$TestsObjDir" \
-        INPUTS="$File $Runner $UNITY_DIR/src/unity.c" \
-        CC="$CC" \
-        CFLAGS="$CFLAGS" \
-        CXX="$CXX" \
-        CXXFLAGS="$CXXFLAGS" \
-        CPPFLAGS="$CPPFLAGS" \
-        LDFLAGS="$LDFLAGS" \
+        DoBuildUnityIfNecessary
+
+        make -f $BuildScript \
+            EXEC="$Exec" \
+            OBJ_DIR="$TestsObjDir" \
+            INPUTS="$File $Test $Runner $UNITY_DIR/src/unity.c" \
+            CC="$CC" \
+            CFLAGS="$CFLAGS" \
+            CXX="$CXX" \
+            CXXFLAGS="$CXXFLAGS" \
+            CPPFLAGS="$CPPFLAGS" \
+            LDFLAGS="$LDFLAGS" \
+            "$Exec"
+        BuildResult=$?
+
+        # Update results and return if building fails
+        if [ $BuildResult -ne 0 ]; then
+            DoUpdateResults $BuildResult
+            return
+        fi
+
+        # Run test
         "$Exec"
-    BuildResult=$?
+        TestResult=$?
 
-    # Update results and return if building fails
-    if [ $BuildResult -ne 0 ]; then
-        DoUpdateResults $BuildResult
-        return
+        # Update results
+        DoUpdateResults $TestResult
     fi
-
-    # Run test
-    "$Exec"
-    TestResult=$?
-
-    # Update results
-    DoUpdateResults $TestResult
 }
 
 DoCoverageIfRequested() {
     if [ ! -z $FlagCoverage ]; then
-        gcovr --filter="src/" --branch \
+        gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" --branch \
             --exclude-unreachable-branches \
             --exclude-throw-branches
-        gcovr --filter="src/" | sed '1,4d'
+        gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" | sed '1,4d'
     fi
 }
 
@@ -185,7 +199,7 @@ DoProcessCommandLineArguments() {
             FlagCoverage=1
             ;;
         -a|--all)
-            for File in $(find src -name '*.[cC]'); do
+            for File in $(find src/ -name '*.[cC]*'); do
                 DoRunTest "$File"
             done
             ;;

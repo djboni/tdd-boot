@@ -1,12 +1,6 @@
-#include <stdint.h>
+#include "sum.h"
 
-int32_t Sum(int32_t x, int32_t y)
-{
-    return x + y;
-}
-
-#ifdef UNITTEST
-    #include "unity.h"
+#include "unity.h"
 
 void suiteSetUp(void)
 {
@@ -49,5 +43,3 @@ void test_Sum_ThreeFive_ReturnEight(void)
 {
     TEST_ASSERT_EQUAL(8, Sum(3, 5));
 }
-
-#endif /* UNITTEST */

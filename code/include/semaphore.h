@@ -20,4 +20,4 @@ int8_t SemaphorePost(semaphore_t *sem);
 }
 #endif
 
-#endif
+#endif /* SEMAPHORE_H_ */

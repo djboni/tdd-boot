@@ -1,22 +1,23 @@
 # [TDD Boot - Unity](https://github.com/djboni/tdd-boot)
 
 ```c
-/* File: example.c with additional comments. */
+/* File: sum.c. */
 
-/* Normal source code. It is always compiled. */
-
-#include <stdint.h>
+#include "sum.h"
 
 int32_t Sum(int32_t x, int32_t y)
 {
     return x + y;
 }
+```
 
-/* Unit-test section. It is compiled only when the macro UNITTEST is defined. */
+```c
+/* File: sum_test.c with additional comments. */
 
-#ifdef UNITTEST
-    /* Include unit-test headers and fake/mocks. */
-    #include "unity.h"
+#include "sum.h"
+
+/* Include unit-test headers and fake/mocks. */
+#include "unity.h"
 
 /* Suite set-up: runs once before the first test. */
 void suiteSetUp(void)
@@ -71,6 +72,4 @@ void test_Sum_ThreeFive_ReturnEight(void)
 {
     TEST_ASSERT_EQUAL(8, Sum(3, 5));
 }
-
-#endif /* UNITTEST */
 ```

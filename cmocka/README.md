@@ -1,27 +1,29 @@
 # [TDD Boot - cmocka](https://github.com/djboni/tdd-boot)
 
 ```c
-/* File: example.c with additional comments. */
+/* File: sum.c. */
 
-/* Normal source code. It is always compiled. */
-
-#include <stdint.h>
+#include "sum.h"
 
 int32_t Sum(int32_t x, int32_t y)
 {
     return x + y;
 }
+```
 
-/* Unit-test section. It is compiled only when the macro UNITTEST is defined. */
+```c
+/* File: sum_test.c with additional comments. */
 
-#if UNITTEST
-    /* These four must be included before cmocka.h. */
-    #include <setjmp.h>
-    #include <stdarg.h>
-    #include <stddef.h>
-    #include <stdint.h>
+#include "sum.h"
 
-    #include "cmocka.h"
+/* These four must be included before cmocka.h. */
+#include <setjmp.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h>
+
+/* Include unit-test headers and fake/mocks. */
+#include "cmocka.h"
 
 /* Suite set-up: runs once before the first test. */
 int suiteSetUp(void **state)
@@ -114,7 +116,4 @@ int main(void)
 
     return cmocka_run_group_tests(tests, suiteSetUp, suiteTearDown);
 }
-
-#endif /* UNITTEST */
-
 ```
