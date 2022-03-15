@@ -2,8 +2,13 @@
 # Copyright (c) 2022 Djones A. Boni - MIT License
 
 # Constants
+
 BuildScript="lib/scripts/build.mk"
 CPPUTEST_DIR="lib/cpputest"
+
+BuildDir="build"
+TestsObjDir="$BuildDir/obj_tests"
+ObjDir="$BuildDir/obj"
 
 # Variables
 TestTotal=0
@@ -51,8 +56,12 @@ DoRunTest() {
     File="$1"
 
     # Determine file names and directories
-    Exec="build/${File%.[cC]*}.elf"
+
+    Exec="$BuildDir/${File%.[cC]*}.elf"
     ExecDir="${Exec%/*}"
+
+    Object="$ObjDir/${File%.[cC]*}.o"
+    ObjectDir="${Object%/*}"
 
     # Create directories
 
@@ -60,42 +69,78 @@ DoRunTest() {
         mkdir -p "$ExecDir"
     fi
 
-    DoBuildCppUTestIfNecessary
+    if [ ! -d "$ObjectDir" ]; then
+        mkdir -p "$ObjectDir"
+    fi
 
-    CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CFLAGS="$CFLAGS -include scripts/MemoryLeakDetector.h"
+    # Build file
 
-    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-    CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
+    CC="gcc"
+    CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CXX="g++"
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CPPFLAGS=""
+    LDFLAGS=""
 
-    CPPFLAGS="-D UNITTEST -I $CPPUTEST_DIR/include"
+    make -f $BuildScript \
+        OBJ_DIR="$ObjDir" \
+        INPUTS="$File" \
+        CC="$CC" \
+        CFLAGS="$CFLAGS" \
+        CXX="$CXX" \
+        CXXFLAGS="$CXXFLAGS" \
+        CPPFLAGS="$CPPFLAGS" \
+        LDFLAGS="$LDFLAGS" \
+        "$Object"
+    BuildResult=$?
 
-    LDFLAGS="--coverage -l CppUTest -l CppUTestExt -L $CPPUTEST_DIR/cpputest_build/lib"
+    # Update results and return if building fails
+    if [ $BuildResult -ne 0 ]; then
+        DoUpdateResults $BuildResult
+        return
+    fi
 
     # Build test
+
+    CC="g++"
+    CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CFLAGS="$CFLAGS -include scripts/MemoryLeakDetector.h"
+    CXX="g++"
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
+    CPPFLAGS="-D UNITTEST -I $CPPUTEST_DIR/include"
+    LDFLAGS="--coverage -l CppUTest -l CppUTestExt -L $CPPUTEST_DIR/cpputest_build/lib"
+
+    # Create test runner
+    # Do nothing
+
+    DoBuildCppUTestIfNecessary
+
     make -f $BuildScript \
         EXEC="$Exec" \
+        OBJ_DIR="$TestsObjDir" \
         INPUTS="$File scripts/main.c" \
-        CC=g++ \
+        CC="$CC" \
         CFLAGS="$CFLAGS" \
-        CXX=g++ \
+        CXX="$CXX" \
         CXXFLAGS="$CXXFLAGS" \
         CPPFLAGS="$CPPFLAGS" \
         LDFLAGS="$LDFLAGS" \
         "$Exec"
     BuildResult=$?
 
+    # Update results and return if building fails
     if [ $BuildResult -ne 0 ]; then
-        # Update results
         DoUpdateResults $BuildResult
-    else
-        # Run test
-        "$Exec"
-        TestResult=$?
-
-        # Update results
-        DoUpdateResults $TestResult
+        return
     fi
+
+    # Run test
+    "$Exec"
+    TestResult=$?
+
+    # Update results
+    DoUpdateResults $TestResult
 }
 
 DoCoverageIfRequested() {
@@ -138,7 +183,7 @@ DoProcessCommandLineArguments() {
             set -e
             ;;
         -c|--clean)
-            rm -fr build/
+            rm -fr "$BuildDir"
             ;;
         -r|--coverage)
             FlagCoverage=1

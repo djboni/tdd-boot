@@ -2,9 +2,14 @@
 # Copyright (c) 2022 Djones A. Boni - MIT License
 
 # Constants
+
 BuildScript="lib/scripts/build.mk"
 UNITY_DIR="lib/unity"
 RunnerCreator="$UNITY_DIR/auto/generate_test_runner.rb"
+
+BuildDir="build"
+TestsObjDir="$BuildDir/obj_tests"
+ObjDir="$BuildDir/obj"
 
 # Variables
 TestTotal=0
@@ -33,17 +38,9 @@ DoPrintResults() {
     fi
 }
 
-DoBuildCppUTestIfNecessary() {
-
-    # Build CppUTest if necessary
-    if [ ! -f lib/cpputest/cpputest_build/lib/libCppUTest.a ]; then
-        (
-            cd lib/cpputest/cpputest_build
-            autoreconf .. -i
-            ../configure
-            make
-        )
-    fi
+DoBuildUnityIfNecessary() {
+    # Do nothing
+    :
 }
 
 DoRunTest() {
@@ -52,10 +49,15 @@ DoRunTest() {
     File="$1"
 
     # Determine file names and directories
-    Runner="build/${File%.[cC]}_runner.c"
+
+    Runner="$BuildDir/${File%.[cC]}_runner.c"
     RunnerDir="${Runner%/*}"
-    Exec="build/${File%.[cC]*}.elf"
+
+    Exec="$BuildDir/${File%.[cC]*}.elf"
     ExecDir="${Exec%/*}"
+
+    Object="$ObjDir/${File%.[cC]*}.o"
+    ObjectDir="${Object%/*}"
 
     # Create directories
 
@@ -63,36 +65,78 @@ DoRunTest() {
         mkdir -p "$ExecDir"
     fi
 
-    if [ ! -d "$RunnerDir" ]; then
-        mkdir -p "$RunnerDir"
+    if [ ! -d "$ObjectDir" ]; then
+        mkdir -p "$ObjectDir"
     fi
+
+    # Build file
+
+    CC="gcc"
+    CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CXX="g++"
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CPPFLAGS=""
+    LDFLAGS=""
+
+    make -f $BuildScript \
+        OBJ_DIR="$ObjDir" \
+        INPUTS="$File" \
+        CC="$CC" \
+        CFLAGS="$CFLAGS" \
+        CXX="$CXX" \
+        CXXFLAGS="$CXXFLAGS" \
+        CPPFLAGS="$CPPFLAGS" \
+        LDFLAGS="$LDFLAGS" \
+        "$Object"
+    BuildResult=$?
+
+    # Update results and return if building fails
+    if [ $BuildResult -ne 0 ]; then
+        DoUpdateResults $BuildResult
+        return
+    fi
+
+    # Build test
+
+    CC="gcc"
+    CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CXX="g++"
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CPPFLAGS="-D UNITTEST -I $UNITY_DIR/src"
+    LDFLAGS="--coverage"
 
     # Create test runner
     if [ ! -f "$Runner" ] || [ "$File" -nt "$Runner" ]; then
         ruby $RunnerCreator "$File" "$Runner"
     fi
 
-    # Build test
+    DoBuildUnityIfNecessary
+
     make -f $BuildScript \
         EXEC="$Exec" \
+        OBJ_DIR="$TestsObjDir" \
         INPUTS="$File $Runner $UNITY_DIR/src/unity.c" \
-        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror --coverage" \
-        CPPFLAGS="-D UNITTEST -I $UNITY_DIR/src" \
-        LDFLAGS="--coverage" \
+        CC="$CC" \
+        CFLAGS="$CFLAGS" \
+        CXX="$CXX" \
+        CXXFLAGS="$CXXFLAGS" \
+        CPPFLAGS="$CPPFLAGS" \
+        LDFLAGS="$LDFLAGS" \
         "$Exec"
     BuildResult=$?
 
+    # Update results and return if building fails
     if [ $BuildResult -ne 0 ]; then
-        # Update results
         DoUpdateResults $BuildResult
-    else
-        # Run test
-        "$Exec"
-        TestResult=$?
-
-        # Update results
-        DoUpdateResults $TestResult
+        return
     fi
+
+    # Run test
+    "$Exec"
+    TestResult=$?
+
+    # Update results
+    DoUpdateResults $TestResult
 }
 
 DoCoverageIfRequested() {
@@ -135,7 +179,7 @@ DoProcessCommandLineArguments() {
             set -e
             ;;
         -c|--clean)
-            rm -fr build/
+            rm -fr "$BuildDir"
             ;;
         -r|--coverage)
             FlagCoverage=1

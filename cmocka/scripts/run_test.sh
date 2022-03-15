@@ -2,8 +2,13 @@
 # Copyright (c) 2022 Djones A. Boni - MIT License
 
 # Constants
+
 BuildScript="lib/scripts/build.mk"
 CMOCKA_DIR="lib/cmocka"
+
+BuildDir="build"
+TestsObjDir="$BuildDir/obj_tests"
+ObjDir="$BuildDir/obj"
 
 # Variables
 TestTotal=0
@@ -52,8 +57,12 @@ DoRunTest() {
     File="$1"
 
     # Determine file names and directories
-    Exec="build/${File%.[cC]*}.elf"
+
+    Exec="$BuildDir/${File%.[cC]*}.elf"
     ExecDir="${Exec%/*}"
+
+    Object="$ObjDir/${File%.[cC]*}.o"
+    ObjectDir="${Object%/*}"
 
     # Create directories
 
@@ -61,30 +70,76 @@ DoRunTest() {
         mkdir -p "$ExecDir"
     fi
 
-    DoBuildCmockaIfNecessary
+    if [ ! -d "$ObjectDir" ]; then
+        mkdir -p "$ObjectDir"
+    fi
+
+    # Build file
+
+    CC="gcc"
+    CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CXX="g++"
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CPPFLAGS=""
+    LDFLAGS=""
+
+    make -f $BuildScript \
+        OBJ_DIR="$ObjDir" \
+        INPUTS="$File" \
+        CC="$CC" \
+        CFLAGS="$CFLAGS" \
+        CXX="$CXX" \
+        CXXFLAGS="$CXXFLAGS" \
+        CPPFLAGS="$CPPFLAGS" \
+        LDFLAGS="$LDFLAGS" \
+        "$Object"
+    BuildResult=$?
+
+    # Update results and return if building fails
+    if [ $BuildResult -ne 0 ]; then
+        DoUpdateResults $BuildResult
+        return
+    fi
 
     # Build test
+
+    CC="gcc"
+    CFLAGS="-g -O0 -std=c99 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CXX="g++"
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CPPFLAGS="-D UNITTEST -I $CMOCKA_DIR/include"
+    LDFLAGS="--coverage -L $CMOCKA_DIR/build/src -l cmocka"
+
+    # Create test runner
+    # Do nothing
+
+    DoBuildCmockaIfNecessary
+
     make -f $BuildScript \
         EXEC="$Exec" \
+        OBJ_DIR="$TestsObjDir" \
         INPUTS="$File" \
-        CC=gcc \
-        CFLAGS="-g -O0 -std=c99 -pedantic -Wall -Wextra -Werror --coverage" \
-        CPPFLAGS="-D UNITTEST -I $CMOCKA_DIR/include" \
-        LDFLAGS="--coverage -L $CMOCKA_DIR/build/src -l cmocka" \
+        CC="$CC" \
+        CFLAGS="$CFLAGS" \
+        CXX="$CXX" \
+        CXXFLAGS="$CXXFLAGS" \
+        CPPFLAGS="$CPPFLAGS" \
+        LDFLAGS="$LDFLAGS" \
         "$Exec"
     BuildResult=$?
 
+    # Update results and return if building fails
     if [ $BuildResult -ne 0 ]; then
-        # Update results
         DoUpdateResults $BuildResult
-    else
+        return
+    fi
+
         # Run test
         LD_LIBRARY_PATH=$CMOCKA_DIR/build/src "$Exec"
         TestResult=$?
 
         # Update results
         DoUpdateResults $TestResult
-    fi
 }
 
 DoCoverageIfRequested() {
@@ -127,7 +182,7 @@ DoProcessCommandLineArguments() {
             set -e
             ;;
         -c|--clean)
-            rm -fr build/
+            rm -fr "$BuildDir"
             ;;
         -r|--coverage)
             FlagCoverage=1
