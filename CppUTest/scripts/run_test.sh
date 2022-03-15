@@ -16,6 +16,7 @@ ObjDir="$BuildDir/obj"
 # Variables
 TestTotal=0
 TestError=0
+TestInexistent=0
 ExitStatus=0
 
 DoUpdateResults() {
@@ -23,16 +24,28 @@ DoUpdateResults() {
     # != 0 Error
     TestResult=$1
 
+    # == 0 Test present
+    # != 0 No test
+    TestPresent=$2
+
     if [ $TestResult -ne 0 ]; then
         ExitStatus=1
         TestError=$((TestError + 1))
     fi
+
+    if [ $TestPresent -ne 0 ]; then
+        TestInexistent=$((TestInexistent + 1))
+    fi
+
     TestTotal=$((TestTotal + 1))
 }
 
 DoPrintResults() {
     echo "=============================================="
-    echo "$TestTotal Tests, $TestError Failures"
+    echo -n "$TestTotal Tests, "
+    echo -n "$TestInexistent Inexistent, "
+    echo -n "$TestError Failures"
+    echo
     if [ $TestError -eq 0 ]; then
         echo "OK"
     else
@@ -102,12 +115,17 @@ DoRunTest() {
 
     # Update results and return if building fails
     if [ $BuildResult -ne 0 ]; then
-        DoUpdateResults $BuildResult
+        DoUpdateResults $BuildResult 0
         return
     fi
 
-    # If the test exists
-    if [ -f "$Test" ]; then
+    if [ ! -f "$Test" ]; then
+        # The test does NOT exist
+
+        # Update results
+        DoUpdateResults 0 1
+    else
+        # The test exists
 
         # Build test
 
@@ -140,7 +158,7 @@ DoRunTest() {
 
         # Update results and return if building fails
         if [ $BuildResult -ne 0 ]; then
-            DoUpdateResults $BuildResult
+            DoUpdateResults $BuildResult 0
             return
         fi
 
@@ -149,7 +167,7 @@ DoRunTest() {
         TestResult=$?
 
         # Update results
-        DoUpdateResults $TestResult
+        DoUpdateResults $TestResult 0
     fi
 }
 
