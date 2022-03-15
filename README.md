@@ -33,9 +33,9 @@ git submodule update
 2. Enter one of the example directories
 
 ```sh
-cd CppUTest
+cd cpputest
 # OR
-cd Unity
+cd unity
 cd cmocka
 # ETC
 ```

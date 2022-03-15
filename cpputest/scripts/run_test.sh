@@ -221,7 +221,7 @@ DoProcessCommandLineArguments() {
             FlagCoverage=1
             ;;
         -a|--all)
-            for File in $(find src/ -name '*.[cC]*'); do
+            for File in $(find $SrcDir/ -name '*.[cC]*'); do
                 DoRunTest "$File"
             done
             ;;
