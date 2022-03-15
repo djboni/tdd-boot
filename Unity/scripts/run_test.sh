@@ -80,13 +80,19 @@ DoRunTest() {
         CPPFLAGS="-D UNITTEST -I $UNITY_DIR/src" \
         LDFLAGS="--coverage" \
         "$Exec"
+    BuildResult=$?
 
-    # Run test
-    "$Exec"
-    TestResult=$?
+    if [ $BuildResult -ne 0 ]; then
+        # Update results
+        DoUpdateResults $BuildResult
+    else
+        # Run test
+        "$Exec"
+        TestResult=$?
 
-    # Update results
-    DoUpdateResults $TestResult
+        # Update results
+        DoUpdateResults $TestResult
+    fi
 }
 
 DoCoverageIfRequested() {

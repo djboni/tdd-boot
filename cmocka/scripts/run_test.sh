@@ -72,13 +72,19 @@ DoRunTest() {
         CPPFLAGS="-D UNITTEST -I $CMOCKA_DIR/include" \
         LDFLAGS="--coverage -L $CMOCKA_DIR/build/src -l cmocka" \
         "$Exec"
+    BuildResult=$?
 
-    # Run test
-    LD_LIBRARY_PATH=$CMOCKA_DIR/build/src "$Exec"
-    TestResult=$?
+    if [ $BuildResult -ne 0 ]; then
+        # Update results
+        DoUpdateResults $BuildResult
+    else
+        # Run test
+        LD_LIBRARY_PATH=$CMOCKA_DIR/build/src "$Exec"
+        TestResult=$?
 
-    # Update results
-    DoUpdateResults $TestResult
+        # Update results
+        DoUpdateResults $TestResult
+    fi
 }
 
 DoCoverageIfRequested() {
