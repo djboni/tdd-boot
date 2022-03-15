@@ -62,16 +62,26 @@ DoRunTest() {
 
     DoBuildCppUTestIfNecessary
 
+    CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CFLAGS="$CFLAGS -include scripts/MemoryLeakDetector.h"
+
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+    CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
+
+    CPPFLAGS="-D UNITTEST -I $CPPUTEST_DIR/include"
+
+    LDFLAGS="--coverage -l CppUTest -l CppUTestExt -L $CPPUTEST_DIR/cpputest_build/lib"
+
     # Build test
     make -f $BuildScript \
         EXEC="$Exec" \
         INPUTS="$File scripts/main.c" \
         CC=g++ \
-        CFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage" \
+        CFLAGS="$CFLAGS" \
         CXX=g++ \
-        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage" \
-        CPPFLAGS="-D UNITTEST -I $CPPUTEST_DIR/include" \
-        LDFLAGS="--coverage -l CppUTest -L $CPPUTEST_DIR/cpputest_build/lib" \
+        CXXFLAGS="$CXXFLAGS" \
+        CPPFLAGS="$CPPFLAGS" \
+        LDFLAGS="$LDFLAGS" \
         "$Exec"
 
     # Run test
