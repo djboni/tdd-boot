@@ -89,7 +89,9 @@ DoRunTest() {
 
 DoCoverageIfRequested() {
     if [ ! -z $FlagCoverage ]; then
-        gcovr --filter="src/" --branch
+        gcovr --filter="src/" --branch \
+            --exclude-unreachable-branches \
+            --exclude-throw-branches
         gcovr --filter="src/" | sed '1,4d'
     fi
 }
