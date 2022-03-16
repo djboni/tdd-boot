@@ -7,9 +7,9 @@ Development) using different unit-test frameworks.
 
 The available examples are:
 
-- Unity (C)
-- cmocka (C)
-- CppUTest (C++)
+- [Unity (C)](https://github.com/ThrowTheSwitch/Unity)
+- [cmocka (C)](https://gitlab.com/cmocka/cmocka)
+- [CppUTest (C++)](https://github.com/cpputest/cpputest)
 
 You are free to copy, modify, and distribute **TDD Boot** with attribution
 under the terms of the MIT license. See the LICENSE file for details.
