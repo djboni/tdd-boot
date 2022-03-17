@@ -10,6 +10,7 @@ The available examples are:
 - [Unity (C)](https://github.com/ThrowTheSwitch/Unity)
 - [cmocka (C)](https://gitlab.com/cmocka/cmocka)
 - [CppUTest (C++)](https://github.com/cpputest/cpputest)
+- [Boost.Test (C++)](http://www.boost.org/doc/libs/release/libs/test)
 
 You are free to copy, modify, and distribute **TDD Boot** with attribution
 under the terms of the MIT license. See the LICENSE file for details.
@@ -37,6 +38,7 @@ cd cpputest
 # OR
 cd unity
 cd cmocka
+cd boosttest
 # ETC
 ```
 

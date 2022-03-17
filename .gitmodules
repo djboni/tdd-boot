@@ -10,3 +10,6 @@
 [submodule "lib/cmocka"]
 	path = lib/cmocka
 	url = https://gitlab.com/cmocka/cmocka
+[submodule "lib/boost"]
+	path = lib/boost
+	url = https://github.com/boostorg/boost

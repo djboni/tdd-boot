@@ -1,4 +1,4 @@
-TESTS_FRAMEWORKS = unity cpputest cmocka
+TESTS_FRAMEWORKS = unity cpputest cmocka boosttest
 
 all:
 	for Framework in $(TESTS_FRAMEWORKS); do \
