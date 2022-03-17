@@ -150,7 +150,7 @@ DoRunTest() {
         make -f $BuildScript \
             EXEC="$Exec" \
             OBJ_DIR="$TestsObjDir" \
-            INPUTS="$File $Test scripts/main.c" \
+            INPUTS="$File $Test scripts/main.cpp" \
             CC="$CC" \
             CFLAGS="$CFLAGS" \
             CXX="$CXX" \
