@@ -61,3 +61,14 @@ TEST(Sum, ThreeFive_ReturnEight)
     LONGS_EQUAL(8, Sum(3, 5));
 }
 ```
+
+```c
+/* File: main.cpp. */
+
+#include "CppUTest/CommandLineTestRunner.h"
+
+int main(int argc, char **argv)
+{
+    return CommandLineTestRunner::RunAllTests(argc, argv);
+}
+```

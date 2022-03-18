@@ -167,7 +167,8 @@ DoRunTest() {
         fi
 
         # Run test
-        LD_LIBRARY_PATH=$CMOCKA_DIR/build/src "$Exec"
+        LD_LIBRARY_PATH="$CMOCKA_DIR/build/src" \
+        "$Exec"
         TestResult=$?
 
         # Update results

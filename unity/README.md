@@ -1,5 +1,9 @@
 # [TDD Boot - Unity](https://github.com/djboni/tdd-boot)
 
+The test runner is created using the script
+`unity/auto/generate_test_runner.rb`.
+This script defines the function `main()` and calls the test functions.
+
 ```c
 /* File: sum.c. */
 

@@ -50,6 +50,31 @@ sh scripts/run_test.sh --all
 
 This script must be executed from the example directory root.
 
+## Organization
+
+For each test framework directory:
+
+1. The directory _src/_ has the source files. Source files are named
+   X.c or X.cpp.
+2. The directory _include/_ has the header files. Header files are named
+   X.h.
+3. The directory _tests/_ has the test files. Test files are named
+   X_test.c or X_test.cpp.
+4. The directory _lib/_ has the libraries used.
+5. The directory _scripts/_ has scripts and other supporting files.
+
+# Running tests
+
+In the framework directory:
+
+1. If you want to run all tests use `--all`
+   - `sh scripts/run_test.sh --all`
+2. If you want to see the test coverage after the test use `--coverage`
+   - `sh scripts/run_test.sh --all --coverage`
+3. If you want to run test only for some source files just pass the filenames
+   (use the files from _src/_, not from _tests/_)
+   - `sh scripts/run_test.sh src/FILE.c`
+
 ## Dependencies
 
 Necessary:
@@ -66,17 +91,3 @@ Optional:
 - Clang-format
 - Python
 - Pre-commit
-
-## How to use
-
-1. Enter _src_ directory copy, rename and edit a file and run the tests.
-2. If you want to run all tests use `--all`
-   - `sh scripts/run_test.sh --all`
-3. If you want to run test only some files use the filenames
-   - `sh scripts/run_test.sh FILE.c`
-4. If you want to see the test coverage after the test use `--coverage`
-   - `sh scripts/run_test.sh --all --coverage`
-5. See the example below:
-   - A normal source code (with includes, variables, and functions).
-   - Then there is the unit-test section, with set-up, tear-down, and test
-     functions which is used to test the functions in the file.

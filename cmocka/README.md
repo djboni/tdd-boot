@@ -1,5 +1,8 @@
 # [TDD Boot - cmocka](https://github.com/djboni/tdd-boot)
 
+The test runner is created manually.
+The test functions must be manually added to the `main()` function.
+
 ```c
 /* File: sum.c. */
 
