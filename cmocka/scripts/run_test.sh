@@ -137,7 +137,7 @@ DoRunTest() {
         CFLAGS="-g -O0 -std=c99 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
         CXX="g++"
         CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-        CPPFLAGS="-I include -I $CMOCKA_DIR/include"
+        CPPFLAGS="-I include -I tests -I $CMOCKA_DIR/include"
         LD="gcc"
         LDFLAGS="--coverage -L $CMOCKA_DIR/build/src -l cmocka"
 
