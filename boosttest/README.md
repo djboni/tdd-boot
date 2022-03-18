@@ -17,6 +17,7 @@ int32_t Sum(int32_t x, int32_t y)
 #include "sum.h"
 
 /* Include unit-test headers and fake/mocks. */
+#define BOOST_TEST_DYN_LINK
 #include "boost/test/unit_test.hpp"
 
 struct TestSuiteFixture
@@ -72,5 +73,6 @@ BOOST_AUTO_TEST_SUITE_END()
 /* File: main.cpp. */
 
 #define BOOST_TEST_MODULE Main
-#include "boost/test/included/unit_test.hpp"
+#define BOOST_TEST_DYN_LINK
+#include "boost/test/unit_test.hpp"
 ```

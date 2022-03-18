@@ -56,13 +56,13 @@ DoPrintResults() {
 
 DoBuildBoostTestIfNecessary() {
     # Build Boost.Test if necessary
-    if [ ! -f "$TestsObjDir/scripts/main.o" ]; then
+    if [ ! -f "$BOOST_DIR/stage/lib/libboost_unit_test_framework.so" ]; then
         (
-            # We are using Header-only variant, so we just initialize the
-            # submodules
             cd "$BOOST_DIR"
             git submodule init
             git submodule update
+            ./bootstrap.sh
+            ./b2 --with-test link=shared
         )
     fi
 }
@@ -146,7 +146,7 @@ DoRunTest() {
         CXXFLAGS="-g -O0 -std=c++11 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
         CPPFLAGS="-I include $BOOST_INCLUDES"
         LD="g++"
-        LDFLAGS="--coverage"
+        LDFLAGS="--coverage -L$BOOST_DIR/stage/lib -lboost_unit_test_framework"
 
         # Create test runner
         # Do nothing
@@ -174,6 +174,7 @@ DoRunTest() {
         fi
 
         # Run test
+        LD_LIBRARY_PATH="$BOOST_DIR/stage/lib" \
         "$Exec"
         TestResult=$?
 
