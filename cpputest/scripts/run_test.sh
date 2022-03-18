@@ -138,7 +138,7 @@ DoRunTest() {
         CXX="g++"
         CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
         CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
-        CPPFLAGS="-I include -I $CPPUTEST_DIR/include"
+        CPPFLAGS="-I include -I tests -I $CPPUTEST_DIR/include"
         LD="g++"
         LDFLAGS="--coverage -l CppUTest -l CppUTestExt -L $CPPUTEST_DIR/cpputest_build/lib"
 
