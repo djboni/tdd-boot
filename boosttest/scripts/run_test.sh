@@ -56,11 +56,15 @@ DoPrintResults() {
 
 DoBuildBoostTestIfNecessary() {
     # Build Boost.Test if necessary
-    (
-        cd "$BOOST_DIR"
-        git submodule init
-        git submodule update
-    )
+    if [ ! -f "$TestsObjDir/scripts/main.o" ]; then
+        (
+            # We are using Header-only variant, so we just initialize the
+            # submodules
+            cd "$BOOST_DIR"
+            git submodule init
+            git submodule update
+        )
+    fi
 }
 
 DoRunTest() {
@@ -152,7 +156,7 @@ DoRunTest() {
         make -f $BuildScript \
             EXEC="$Exec" \
             OBJ_DIR="$TestsObjDir" \
-            INPUTS="$File $Test" \
+            INPUTS="$File $Test scripts/main.cpp" \
             CC="$CC" \
             CFLAGS="$CFLAGS" \
             CXX="$CXX" \

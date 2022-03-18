@@ -1,7 +1,6 @@
 #include "semaphore.h"
 
-#define BOOST_TEST_MODULE Semaphore
-#include "boost/test/included/unit_test.hpp"
+#include "boost/test/unit_test.hpp"
 
 struct TestSuiteFixture
 {

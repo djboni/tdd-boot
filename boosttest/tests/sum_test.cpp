@@ -1,7 +1,6 @@
 #include "sum.h"
 
-#define BOOST_TEST_MODULE Sum
-#include "boost/test/included/unit_test.hpp"
+#include "boost/test/unit_test.hpp"
 
 struct TestSuiteFixture
 {

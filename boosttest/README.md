@@ -17,8 +17,7 @@ int32_t Sum(int32_t x, int32_t y)
 #include "sum.h"
 
 /* Include unit-test headers and fake/mocks. */
-#define BOOST_TEST_MODULE Sum
-#include "boost/test/included/unit_test.hpp"
+#include "boost/test/unit_test.hpp"
 
 struct TestSuiteFixture
 {
@@ -67,5 +66,11 @@ BOOST_AUTO_TEST_CASE(ThreeFive_ReturnEight)
 
 /* End of test suite. */
 BOOST_AUTO_TEST_SUITE_END()
+```
 
+```c
+/* File: main.cpp. */
+
+#define BOOST_TEST_MODULE Main
+#include "boost/test/included/unit_test.hpp"
 ```
