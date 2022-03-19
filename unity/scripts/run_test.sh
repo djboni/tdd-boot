@@ -5,7 +5,9 @@
 
 BuildScript="lib/scripts/build.mk"
 UNITY_DIR="lib/unity"
+CMOCK_DIR="lib/cmock"
 RunnerCreator="$UNITY_DIR/auto/generate_test_runner.rb"
+MockCreator="$CMOCK_DIR/lib/cmock.rb"
 
 BuildDir="build"
 SrcDir="src"
@@ -58,6 +60,25 @@ DoPrintResults() {
 DoBuildUnityIfNecessary() {
     # Do nothing
     :
+}
+
+DoBuildMocksIfNecessary() {
+    MocksToCreate="
+        include/crc.h
+    "
+
+    (
+        cd "$BuildDir/tests"
+
+        for Header in $MocksToCreate; do
+            HeaderName="${Header##*/}"
+            Mocked="mocks/Mock$HeaderName"
+
+            if [ ! -f "$Mocked" ] || [ "$Header" -nt "$Mocked" ]; then
+                ruby "../../$MockCreator" "../../$Header"
+            fi
+        done
+    )
 }
 
 DoRunTest() {
@@ -136,7 +157,7 @@ DoRunTest() {
         CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
         CXX="g++"
         CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
-        CPPFLAGS="-I include -I $UNITY_DIR/src"
+        CPPFLAGS="-I include -I $BuildDir/tests -I $UNITY_DIR/src -I $CMOCK_DIR/src"
         LD="gcc"
         LDFLAGS="--coverage"
 
@@ -147,10 +168,12 @@ DoRunTest() {
 
         DoBuildUnityIfNecessary
 
+        DoBuildMocksIfNecessary "$Test"
+
         make -f $BuildScript \
             EXEC="$Exec" \
             OBJ_DIR="$TestsObjDir" \
-            INPUTS="$File $Test $Runner $UNITY_DIR/src/unity.c" \
+            INPUTS="$File $Test $Runner $UNITY_DIR/src/unity.c $CMOCK_DIR/src/cmock.c" \
             CC="$CC" \
             CFLAGS="$CFLAGS" \
             CXX="$CXX" \
