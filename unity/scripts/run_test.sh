@@ -158,35 +158,6 @@ DoRunTest() {
         mkdir -p "$ObjectDir"
     fi
 
-    # Build file
-
-    CC="gcc"
-    CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
-    CXX="g++"
-    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
-    CPPFLAGS="-I include"
-    LD="gcc"
-    LDFLAGS=""
-
-    make -f $BuildScript \
-        OBJ_DIR="$ObjDir" \
-        INPUTS="$File" \
-        CC="$CC" \
-        CFLAGS="$CFLAGS" \
-        CXX="$CXX" \
-        CXXFLAGS="$CXXFLAGS" \
-        CPPFLAGS="$CPPFLAGS" \
-        LD="$LD" \
-        LDFLAGS="$LDFLAGS" \
-        "$Object"
-    BuildResult=$?
-
-    # Update results and return if building fails
-    if [ $BuildResult -ne 0 ]; then
-        DoUpdateResults $BuildResult 0
-        return
-    fi
-
     if [ ! -f "$Test" ]; then
         # The test does NOT exist
 
@@ -245,6 +216,40 @@ DoRunTest() {
 
         # Update results
         DoUpdateResults $TestResult 0
+
+        # Update results and return if testing fails
+        if [ $TestResult -ne 0 ]; then
+            DoUpdateResults $TestResult 0
+            return
+        fi
+    fi
+
+    # Build file
+
+    CC="gcc"
+    CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CXX="g++"
+    CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long"
+    CPPFLAGS="-I include"
+    LD="gcc"
+    LDFLAGS=""
+
+    make -f $BuildScript \
+        OBJ_DIR="$ObjDir" \
+        INPUTS="$File" \
+        CC="$CC" \
+        CFLAGS="$CFLAGS" \
+        CXX="$CXX" \
+        CXXFLAGS="$CXXFLAGS" \
+        CPPFLAGS="$CPPFLAGS" \
+        LD="$LD" \
+        LDFLAGS="$LDFLAGS" \
+        "$Object"
+    BuildResult=$?
+
+    # Update results and return if building fails
+    if [ $BuildResult -ne 0 ]; then
+        DoUpdateResults $BuildResult 0
     fi
 }
 
