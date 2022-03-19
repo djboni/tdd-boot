@@ -3,3 +3,4 @@ build/
 *.elf
 *.gcno
 *.gcda
+cov.xml

@@ -230,6 +230,7 @@ DoRunTest() {
 }
 
 DoCoverageIfRequested() {
+    gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" --xml cov.xml
     if [ ! -z $FlagCoverage ]; then
         gcovr --filter="$SrcDir/" --filter="\.\./code/$SrcDir/" --branch \
             --exclude-unreachable-branches \
