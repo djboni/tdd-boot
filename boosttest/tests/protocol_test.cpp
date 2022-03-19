@@ -3,7 +3,10 @@
 #define BOOST_TEST_DYN_LINK
 #include "boost/test/unit_test.hpp"
 
-#include "fakes/crc_fake.cpp"
+/*
+ * Also compile: fakes/crc_fake.cpp
+ */
+#include "fakes/crc_fake.h"
 
 struct TestSuiteFixture
 {

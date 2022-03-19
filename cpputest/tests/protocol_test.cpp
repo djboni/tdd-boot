@@ -3,7 +3,9 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-#include "mocks/crc_mock.cpp"
+/*
+ * Also compile: mocks/crc_mock.cpp
+ */
 
 TEST_GROUP (Protocol)
 {

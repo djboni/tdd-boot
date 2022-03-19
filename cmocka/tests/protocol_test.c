@@ -7,7 +7,9 @@
 
 #include "cmocka.h"
 
-#include "mocks/crc_mock.c"
+/*
+ * Also compile: mocks/crc_mock.c
+ */
 
 int suiteSetUp(void **state)
 {

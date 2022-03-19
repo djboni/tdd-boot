@@ -67,6 +67,41 @@ DoBuildCppUTestIfNecessary() {
     fi
 }
 
+DetermineAdditionalFiles() {
+    Test="$1"
+    TestDir="${Test%/*}"
+
+    ListOfFiles="$(
+        sed -En '
+            s/(^|.*\s)Also compile: (\S+(\s+\S+)*)(.*|$)/\2/p
+        ' "$Test"
+    )"
+
+    AdditionalFiles=""
+
+    for F in $ListOfFiles; do
+        case "$F" in
+        /*)
+            # Absolute path
+            AdditionalFiles="$AdditionalFiles $F"
+            ;;
+        *)
+            # Relative path
+            if [ -f "$F" ]; then
+                # Found file based on current directory
+                AdditionalFiles="$AdditionalFiles $F"
+            elif [ -f "$TestDir/$F" ]; then
+                # Found file based on test directory
+                AdditionalFiles="$AdditionalFiles $TestDir/$F"
+            else
+                echo "Error: could not find file '$F'."
+                exit 1
+            fi
+            ;;
+        esac
+    done
+}
+
 DoRunTest() {
 
     # Arguments
@@ -150,10 +185,12 @@ DoRunTest() {
 
         DoBuildCppUTestIfNecessary
 
+        DetermineAdditionalFiles "$Test"
+
         make -f $BuildScript \
             EXEC="$Exec" \
             OBJ_DIR="$TestsObjDir" \
-            INPUTS="$File $Test scripts/main.cpp" \
+            INPUTS="$File $Test $AdditionalFiles scripts/main.cpp" \
             CC="$CC" \
             CFLAGS="$CFLAGS" \
             CXX="$CXX" \
