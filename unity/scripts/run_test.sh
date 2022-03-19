@@ -162,13 +162,16 @@ DoRunTest() {
 
         # Build test
 
+        ASAN="-fsanitize=address -static-libasan" # Address sanitizer
+        UBSAN="-fsanitize=undefined -fno-sanitize-recover" # Undefined behavior sanitizer
+
         CC="gcc"
-        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
         CXX="g++"
-        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
         CPPFLAGS="-I include -I $BuildDir/tests -I $UNITY_DIR/src -I $CMOCK_DIR/src"
         LD="gcc"
-        LDFLAGS="--coverage"
+        LDFLAGS="--coverage $ASAN $UBSAN"
 
         # Create test runner
         if [ ! -f "$Runner" ] || [ "$Test" -nt "$Runner" ]; then

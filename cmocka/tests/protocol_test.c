@@ -74,13 +74,14 @@ void test_Protocol_MessageAndCRCFitOnBuff_ReturnsOK_3(void **state)
 {
     (void)state;
     uint8_t buff[2] = {0x5A, 0x5A};
+    uint8_t msg = '\0';
 
     ignore_function_calls(CRCCalcBuff);
     expect_any(CRCCalcBuff, buff_ptr);
     expect_any(CRCCalcBuff, size);
     will_return(CRCCalcBuff, 0xFFFF);
 
-    assert_int_equal(PROTOCOL_OK, ProtocolAppendCRC(&buff[0], 2, NULL, 0));
+    assert_int_equal(PROTOCOL_OK, ProtocolAppendCRC(&buff[0], 2, &msg, 0));
 }
 
 void test_Protocol_MessageAndCRCDontFitOnBuff_ReturnsERR(void **state)
@@ -96,8 +97,9 @@ void test_Protocol_MessageAndCRCDontFitOnBuff_ReturnsERR_2(void **state)
 {
     (void)state;
     uint8_t buff[1] = {0x5A};
+    uint8_t msg = '\0';
 
-    assert_int_equal(PROTOCOL_ERR, ProtocolAppendCRC(&buff[0], 1, NULL, 0));
+    assert_int_equal(PROTOCOL_ERR, ProtocolAppendCRC(&buff[0], 1, &msg, 0));
 }
 
 void test_Protocol_MessageAndCRCAreCopiedToBuff(void **state)
@@ -139,12 +141,13 @@ void test_Protocol_MessageAndCRCAreCopiedToBuff_3(void **state)
 {
     (void)state;
     uint8_t buff[2] = {0x5A, 0x5A};
+    uint8_t msg = '\0';
 
-    expect_value(CRCCalcBuff, buff_ptr, NULL);
+    expect_value(CRCCalcBuff, buff_ptr, &msg);
     expect_value(CRCCalcBuff, size, 0);
     will_return(CRCCalcBuff, 0xCC77);
 
-    ProtocolAppendCRC(&buff[0], 2, NULL, 0);
+    ProtocolAppendCRC(&buff[0], 2, &msg, 0);
 
     assert_int_equal(0x77, buff[0]);
     assert_int_equal(0xCC, buff[1]);

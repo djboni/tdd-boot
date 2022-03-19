@@ -140,13 +140,16 @@ DoRunTest() {
             BOOST_INCLUDES="$BOOST_INCLUDES -I$x"
         done
 
+        ASAN="-fsanitize=address -static-libasan" # Address sanitizer
+        UBSAN="-fsanitize=undefined -fno-sanitize-recover" # Undefined behavior sanitizer
+
         CC="gcc"
-        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
         CXX="g++"
-        CXXFLAGS="-g -O0 -std=c++11 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage"
+        CXXFLAGS="-g -O0 -std=c++11 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
         CPPFLAGS="-I include $BOOST_INCLUDES"
         LD="g++"
-        LDFLAGS="--coverage -L$BOOST_DIR/stage/lib -lboost_unit_test_framework"
+        LDFLAGS="--coverage $ASAN $UBSAN -L$BOOST_DIR/stage/lib -lboost_unit_test_framework"
 
         # Create test runner
         # Do nothing

@@ -41,10 +41,11 @@ TEST(Protocol, MessageAndCRCFitOnBuff_ReturnsOK_2)
 TEST(Protocol, MessageAndCRCFitOnBuff_ReturnsOK_3)
 {
     uint8_t buff[2] = {0x5A, 0x5A};
+    uint8_t msg = '\0';
 
     mock().ignoreOtherCalls();
 
-    LONGS_EQUAL(PROTOCOL_OK, ProtocolAppendCRC(&buff[0], 2, NULL, 0));
+    LONGS_EQUAL(PROTOCOL_OK, ProtocolAppendCRC(&buff[0], 2, &msg, 0));
 }
 
 TEST(Protocol, MessageAndCRCDontFitOnBuff_ReturnsERR)
@@ -58,8 +59,9 @@ TEST(Protocol, MessageAndCRCDontFitOnBuff_ReturnsERR)
 TEST(Protocol, MessageAndCRCDontFitOnBuff_ReturnsERR_2)
 {
     uint8_t buff[1] = {0x5A};
+    uint8_t msg = '\0';
 
-    LONGS_EQUAL(PROTOCOL_ERR, ProtocolAppendCRC(&buff[0], 1, NULL, 0));
+    LONGS_EQUAL(PROTOCOL_ERR, ProtocolAppendCRC(&buff[0], 1, &msg, 0));
 }
 
 TEST(Protocol, MessageAndCRCAreCopiedToBuff)
@@ -102,14 +104,15 @@ TEST(Protocol, MessageAndCRCAreCopiedToBuff_2)
 TEST(Protocol, MessageAndCRCAreCopiedToBuff_3)
 {
     uint8_t buff[2] = {0x5A, 0x5A};
+    uint8_t msg = '\0';
 
     mock()
         .expectOneCall("CRCCalcBuff")
-        .withParameter("buff_ptr", (const uint8_t *)NULL)
+        .withParameter("buff_ptr", (const uint8_t *)&msg)
         .withParameter("size", 0)
         .andReturnValue(0xCC77);
 
-    ProtocolAppendCRC(&buff[0], 2, NULL, 0);
+    ProtocolAppendCRC(&buff[0], 2, &msg, 0);
 
     LONGS_EQUAL(0x77, buff[0]);
     LONGS_EQUAL(0xCC, buff[1]);

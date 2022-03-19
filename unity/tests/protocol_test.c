@@ -52,10 +52,11 @@ void test_Protocol_MessageAndCRCFitOnBuff_ReturnsOK_3(void)
 {
     uint8_t buff[2] = {0x5A, 0x5A};
     crc_t crc = {0xFFFF};
+    uint8_t msg = '\0';
 
-    CRCCalcBuff_ExpectAndReturn(NULL, 0, crc);
+    CRCCalcBuff_ExpectAndReturn(&msg, 0, crc);
 
-    TEST_ASSERT_EQUAL(PROTOCOL_OK, ProtocolAppendCRC(&buff[0], 2, NULL, 0));
+    TEST_ASSERT_EQUAL(PROTOCOL_OK, ProtocolAppendCRC(&buff[0], 2, &msg, 0));
 }
 
 void test_Protocol_MessageAndCRCDontFitOnBuff_ReturnsERR(void)
@@ -69,8 +70,9 @@ void test_Protocol_MessageAndCRCDontFitOnBuff_ReturnsERR(void)
 void test_Protocol_MessageAndCRCDontFitOnBuff_ReturnsERR_2(void)
 {
     uint8_t buff[1] = {0x5A};
+    uint8_t msg = '\0';
 
-    TEST_ASSERT_EQUAL(PROTOCOL_ERR, ProtocolAppendCRC(&buff[0], 1, NULL, 0));
+    TEST_ASSERT_EQUAL(PROTOCOL_ERR, ProtocolAppendCRC(&buff[0], 1, &msg, 0));
 }
 
 void test_Protocol_MessageAndCRCAreCopiedToBuff(void)
@@ -108,10 +110,11 @@ void test_Protocol_MessageAndCRCAreCopiedToBuff_3(void)
 {
     uint8_t buff[2] = {0x5A, 0x5A};
     crc_t crc = {0xCC77};
+    uint8_t msg = '\0';
 
-    CRCCalcBuff_ExpectAndReturn(NULL, 0, crc);
+    CRCCalcBuff_ExpectAndReturn(&msg, 0, crc);
 
-    ProtocolAppendCRC(&buff[0], 2, NULL, 0);
+    ProtocolAppendCRC(&buff[0], 2, &msg, 0);
 
     TEST_ASSERT_EQUAL(0x77, buff[0]);
     TEST_ASSERT_EQUAL(0xCC, buff[1]);
