@@ -172,9 +172,9 @@ DoRunTest() {
         UBSAN="-fsanitize=undefined -fno-sanitize-recover" # Undefined behavior sanitizer
 
         CC="gcc"
-        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
+        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Wno-long-long --coverage $ASAN $UBSAN"
         CXX="g++"
-        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Wno-long-long --coverage $ASAN $UBSAN"
         CPPFLAGS="-I include -I $BuildDir/tests -I $UNITY_DIR/src -I $CMOCK_DIR/src"
         LD="gcc"
         LDFLAGS="--coverage $ASAN $UBSAN"

@@ -143,9 +143,9 @@ DoRunTest() {
         UBSAN="-fsanitize=undefined -fno-sanitize-recover" # Undefined behavior sanitizer
 
         CC="gcc"
-        CFLAGS="-g -O0 -std=c99 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
+        CFLAGS="-g -O0 -std=c99 -pedantic -Wall -Wextra -Wno-long-long --coverage $ASAN $UBSAN"
         CXX="g++"
-        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Wno-long-long --coverage $ASAN $UBSAN"
         CPPFLAGS="-I include -I tests -I $CMOCKA_DIR/include"
         LD="gcc"
         LDFLAGS="--coverage $ASAN $UBSAN -L $CMOCKA_DIR/build/src -l cmocka"

@@ -142,10 +142,10 @@ DoRunTest() {
         UBSAN="-fsanitize=undefined -fno-sanitize-recover" # Undefined behavior sanitizer
 
         CC="gcc"
-        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
+        CFLAGS="-g -O0 -std=c90 -pedantic -Wall -Wextra -Wno-long-long --coverage $ASAN $UBSAN"
         CFLAGS="$CFLAGS -include scripts/MemoryLeakDetector.h"
         CXX="g++"
-        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Werror -Wno-long-long --coverage $ASAN $UBSAN"
+        CXXFLAGS="-g -O0 -std=c++98 -pedantic -Wall -Wextra -Wno-long-long --coverage $ASAN $UBSAN"
         CXXFLAGS="$CXXFLAGS -include scripts/MemoryLeakDetector.h"
         CPPFLAGS="-I include -I tests -I $CPPUTEST_DIR/include"
         LD="g++"
