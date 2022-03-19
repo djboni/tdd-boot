@@ -63,9 +63,13 @@ DoBuildUnityIfNecessary() {
 }
 
 DoBuildMocksIfNecessary() {
-    MocksToCreate="
-        include/crc.h
-    "
+    Test="$1"
+
+    MocksToCreate="$(
+        sed -En '
+            s/.*\bAuto-generate mock: (\S+)\b.*/\1/p
+        ' "$Test"
+    )"
 
     (
         cd "$BuildDir/tests"
@@ -74,7 +78,12 @@ DoBuildMocksIfNecessary() {
             HeaderName="${Header##*/}"
             Mocked="mocks/Mock$HeaderName"
 
-            if [ ! -f "$Mocked" ] || [ "$Header" -nt "$Mocked" ]; then
+            if [ ! -f "../../$Header" ]; then
+                echo
+                echo "Error generating mock: file '$Header' does not exit."
+                echo
+            elif [ ! -f "$Mocked" ] || [ "../../$Header" -nt "$Mocked" ]; then
+                echo "Generating mock: file '$Header' -> '$Mocked'"
                 ruby "../../$MockCreator" "../../$Header"
             fi
         done

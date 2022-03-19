@@ -1,6 +1,6 @@
 #include "protocol.h"
 
-#include "mocks/Mockcrc.c"
+#include "mocks/Mockcrc.c" /* Auto-generate mock: include/crc.h */
 
 void suiteSetUp(void)
 {
