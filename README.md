@@ -17,29 +17,27 @@ under the terms of the MIT license. See the LICENSE file for details.
 
 ## Cloning this project
 
-1. Clone and initializing the submodules
+1. Clone
 
 ```sh
-git clone --recurse-submodules https://github.com/djboni/tdd-boot
+git clone https://github.com/djboni/tdd-boot
 ```
 
-If you cloned without `--recurse-submodules`, you can manually initialize the
-submodules
+2. Checkout one of the frameworks
 
 ```sh
-git submodule init
-git submodule update
-```
-
-2. Enter one of the example directories
-
-```sh
-cd cpputest
+git checkout cpputest
 # OR
-cd unity
-cd cmocka
-cd boosttest
+git checkout unity
+git checkout cmocka
+git checkout boosttest
 # ETC
+```
+
+3. Initialize the submodules
+
+```sh
+git submodule update --init
 ```
 
 3. Execute the tests

@@ -1,18 +1,6 @@
-[submodule "lib/unity"]
-	path = lib/unity
-	url = https://github.com/ThrowTheSwitch/Unity
 [submodule "lib/scripts"]
 	path = lib/scripts
 	url = https://github.com/djboni/tdd-scripts
 [submodule "lib/cpputest"]
 	path = lib/cpputest
 	url = https://github.com/cpputest/cpputest
-[submodule "lib/cmocka"]
-	path = lib/cmocka
-	url = https://gitlab.com/cmocka/cmocka
-[submodule "lib/boost"]
-	path = lib/boost
-	url = https://github.com/boostorg/boost
-[submodule "lib/cmock"]
-	path = lib/cmock
-	url = https://github.com/ThrowTheSwitch/CMock
